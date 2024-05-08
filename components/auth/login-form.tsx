@@ -15,13 +15,15 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,  
+  FormMessage,
 } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/card-wrapper"
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
+import { Icons } from "../icons";
+import { PasswordInput } from "../ui/password-input";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -35,6 +37,7 @@ export const LoginForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -46,7 +49,7 @@ export const LoginForm = () => {
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError("");
     setSuccess("");
-    
+
     startTransition(() => {
       login(values, callbackUrl)
         .then((data) => {
@@ -73,10 +76,9 @@ export const LoginForm = () => {
       headerLabel="Welcome back"
       backButtonLabel="Don't have an account?"
       backButtonHref="/auth/register"
-      showSocial
     >
       <Form {...form}>
-        <form 
+        <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-6"
         >
@@ -112,9 +114,10 @@ export const LoginForm = () => {
                         <Input
                           {...field}
                           disabled={isPending}
-                          placeholder="john.doe@example.com"
+                          placeholder="Email"
                           type="email"
                         />
+
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -127,11 +130,10 @@ export const LoginForm = () => {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           {...field}
                           disabled={isPending}
                           placeholder="******"
-                          type="password"
                         />
                       </FormControl>
                       <Button
@@ -148,8 +150,8 @@ export const LoginForm = () => {
                     </FormItem>
                   )}
                 />
-            </>
-          )}
+              </>
+            )}
           </div>
           <FormError message={error || urlError} />
           <FormSuccess message={success} />
@@ -158,6 +160,7 @@ export const LoginForm = () => {
             type="submit"
             className="w-full"
           >
+            {isPending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
             {showTwoFactor ? "Confirm" : "Login"}
           </Button>
         </form>

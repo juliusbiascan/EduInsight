@@ -13,13 +13,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,  
+  FormMessage,
 } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/card-wrapper"
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { register } from "@/actions/register";
+import { PasswordInput } from "../ui/password-input";
 
 export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -38,7 +39,7 @@ export const RegisterForm = () => {
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
-    
+
     startTransition(() => {
       register(values)
         .then((data) => {
@@ -53,10 +54,10 @@ export const RegisterForm = () => {
       headerLabel="Create an account"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      showSocial
+
     >
       <Form {...form}>
-        <form 
+        <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-6"
         >
@@ -71,7 +72,7 @@ export const RegisterForm = () => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="John Doe"
+                      placeholder="Name"
                     />
                   </FormControl>
                   <FormMessage />
@@ -88,7 +89,7 @@ export const RegisterForm = () => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="john.doe@example.com"
+                      placeholder="Email"
                       type="email"
                     />
                   </FormControl>
@@ -103,11 +104,10 @@ export const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       {...field}
                       disabled={isPending}
                       placeholder="******"
-                      type="password"
                     />
                   </FormControl>
                   <FormMessage />
