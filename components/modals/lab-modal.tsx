@@ -36,7 +36,7 @@ export const LabModal = () => {
     try {
       setLoading(true);
       const response = await axios.post('/api/labaratory', values);
-      window.location.assign(`/${response.data.userId}`);
+      window.location.assign(`/admin/${response.data.userId}`);
     } catch (error) {
       console.log('Something went wrong', error);
     } finally {

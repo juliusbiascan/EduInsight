@@ -5,11 +5,9 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { useLabModal } from "@/hooks/use-lab-modal";
-import { Button } from "./ui/button";
 
 export function RecentUsers() {
-  const labModal = useLabModal();
+
   return (
     <div className="space-y-8">
       <div className="flex items-center">
@@ -71,11 +69,6 @@ export function RecentUsers() {
         </div>
         <div className="ml-auto font-medium">PC-6</div>
       </div>
-      <Button variant={'outline'} onClick={() => {
-        labModal.onOpen();
-      }}>
-        Open
-      </Button>
     </div>
   )
 }

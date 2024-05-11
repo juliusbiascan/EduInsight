@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
-import './globals.css'
-import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from '@/providers/theme-provider'
 import { ModalProvider } from '@/providers/modal-provider'
+import { ToasterProvider } from '@/providers/toast-provider'
+
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,10 +20,6 @@ export const metadata: Metadata = {
     },
   ],
   creator: "juliusbiascan",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
 }
 
 export default async function RootLayout({
@@ -37,7 +34,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            <Toaster />
+            <ToasterProvider />
             <ModalProvider />
             {children}
           </ThemeProvider>

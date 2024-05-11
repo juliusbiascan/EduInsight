@@ -14,34 +14,34 @@ export function MainNav({
 
     const routes = [
         {
-            href: `/${params.labId}`,
+            href: `/admin/${params.labId}`,
             label: 'Overview',
-            active: pathname === `/${params.labId}`,
+            active: pathname === `/admin/${params.labId}`,
         },
         {
-            href: `/${params.labId}/devices`,
+            href: `/admin/${params.labId}/devices`,
             label: 'Devices',
-            active: pathname === `/${params.labId}/devices`,
+            active: pathname === `/admin/${params.labId}/devices`,
         },
         {
-            href: `/${params.labId}/monitoring`,
+            href: `/admin/${params.labId}/monitoring`,
             label: 'Monitoring',
-            active: pathname === `/${params.labId}/monitoring`,
+            active: pathname === `/admin/${params.labId}/monitoring`,
         },
         {
-            href: `/${params.labId}/staff`,
+            href: `/admin/${params.labId}/staff`,
             label: 'Manage Staff',
-            active: pathname === `/${params.labId}/staff`,
+            active: pathname === `/admin/${params.labId}/staff`,
         },
         {
-            href: `/${params.labId}/controlpanel`,
+            href: `/admin/${params.labId}/controlpanel`,
             label: 'Control Panel',
-            active: pathname === `/${params.labId}/controlpanel`,
+            active: pathname === `/admin/${params.labId}/controlpanel`,
         },
         {
-            href: `/${params.labId}/settings`,
+            href: `/admin/${params.labId}/settings`,
             label: 'Settings',
-            active: pathname === `/${params.labId}/settings`,
+            active: pathname === `/admin/${params.labId}/settings`,
         },
     ]
 

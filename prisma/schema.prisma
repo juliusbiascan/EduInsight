@@ -14,6 +14,7 @@ enum UserRole {
 
 model User {
   id                    String                 @id @default(cuid())
+  labId                 String?
   name                  String?
   email                 String?                @unique
   emailVerified         DateTime?
@@ -86,22 +87,20 @@ model Labaratory {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Device    Device[] @relation("LabToDevice")
 }
 
 model Device {
-  id        String        @id @default(cuid())
-  labId     String
-  name      String
-  clientId  String
-  hostName  String
-  devSpecs  DeviceSpecs[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-}
+  id            String     @id @default(uuid())
+  labId         String // Foreign Key to Store
+  lab           Labaratory @relation("LabToDevice", fields: [labId], references: [id])
+  name          String
+  devId         String
+  devHostname   String
+  devMACaddress String
+  isArchived    Boolean
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
-model DeviceSpecs {
-  id      String @id @default(cuid())
-  devId   String
-  uniName String
-  device  Device @relation(fields: [devId], references: [id], onDelete: Cascade)
+  @@index([labId])
 }
