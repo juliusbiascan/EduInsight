@@ -42,11 +42,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { LogoutButton } from "./logout-button"
+import { useRouter } from "next/navigation"
 
 export const UserButton = () => {
 
   const user = useCurrentUser();
 
+  const router = useRouter()
 
   return (
 
@@ -88,13 +90,10 @@ export const UserButton = () => {
             <span>Billing</span>
             <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings")}>
             <Settings className="mr-2 h-4 w-4" />
-            <Link href="/settings"><span>Settings</span></Link>
+            <span>Settings</span>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/settings">Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Keyboard className="mr-2 h-4 w-4" />

@@ -12,6 +12,17 @@ enum UserRole {
   USER
 }
 
+enum DeviceUserRole {
+  GUEST
+  STUDENT
+  TEACHER
+}
+
+enum State {
+  ACTIVE
+  INACTIVE
+}
+
 model User {
   id                    String                 @id @default(cuid())
   labId                 String?
@@ -103,4 +114,22 @@ model Device {
   updatedAt     DateTime   @updatedAt
 
   @@index([labId])
+}
+
+model DeviceUser {
+  id        String         @id @default(uuid())
+  labId     String
+  name      String
+  image     String
+  role      DeviceUserRole @default(GUEST)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model ActiveDeviceUser {
+  id       String @id @default(uuid())
+  labId    String
+  userId   String
+  deviceId String
+  state    State  @default(INACTIVE)
 }

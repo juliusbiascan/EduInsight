@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Scanner } from "@yudiel/react-qr-scanner";
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import React from "react";
 import { SelectAvailableDevice } from "./select-available-device";
 import { SelectWebCamera } from "./select-scanner";
 
 const InOutClient = () => {
 
+  const [qrResult, setQrResult] = useState("")
   const styles: Record<string, CSSProperties> = {
     container: {
       width: '100%',
@@ -54,7 +55,7 @@ const InOutClient = () => {
           <CardContent>
             <Scanner
               styles={styles}
-              onResult={(result: any) => console.log(result)}
+              onResult={(result: any) => setQrResult(result)}
               onError={(error) => console.log(error?.message)}
             />
           </CardContent>
@@ -68,31 +69,33 @@ const InOutClient = () => {
             <CardDescription>Card Description</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Card Content</p>
+            {qrResult}
           </CardContent>
           <CardFooter>
             <p>Card Footer</p>
           </CardFooter>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Devices</CardTitle>
-            <CardDescription>Select Available Device to Login</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SelectAvailableDevice />
-          </CardContent>
-          <CardFooter>
-            <div className="space-x-2 flex items-center justify-end w-full">
-              <Button className="w-full" variant={'destructive'}>
-                OUT
-              </Button>
-              <Button className="w-full bg-green-700" variant={'default'}>
-                IN
-              </Button>
-            </div>
-          </CardFooter>
-        </Card>
+        <div className="grid grid-rows-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Available Devices</CardTitle>
+              <CardDescription>Select Available Device to Login</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SelectAvailableDevice />
+            </CardContent>
+            <CardFooter>
+              <div className="space-x-2 flex items-center justify-end w-full">
+                <Button className="w-full" variant={'destructive'}>
+                  OUT
+                </Button>
+                <Button className="w-full bg-green-700" variant={'default'}>
+                  IN
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
 
     </>);

@@ -76,7 +76,7 @@ const SettingsPage = () => {
 
   return (
     <div className="flex-col">
-      <div className="flex-1 p-8 pt-6 space-y-4">
+      <div className="w-3/4 flex-1 p-8 pt-6 space-y-4">
         <Card className="">
           <CardHeader>
             <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
