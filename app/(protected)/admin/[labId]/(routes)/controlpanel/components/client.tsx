@@ -23,7 +23,7 @@ export const ControlPanelClient: React.FC<ControlPanelClientProps> = ({
         description="Adjust your device setting in your laboratory" />
       <Separator />
       <div className="h-screen flex flex-col items-center justify-center">
-        <h1 className="text-8xl">(Soon if Applicable)</h1>
+        <h1 className="text-2xl">(Soon if Applicable)</h1>
       </div>
     </>
   )

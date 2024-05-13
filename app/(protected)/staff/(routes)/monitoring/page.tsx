@@ -15,18 +15,6 @@ const Monitoring = async ({
     redirect("/login")
   }
 
-  const lab = await db.labaratory.findFirst({
-    where: {
-      id: params.labId,
-      userId: session.user.id,
-    }
-  });
-
-
-  if (!lab) {
-    redirect('/');
-  };
-
   return (
     <div className="flex-col">
       <div className="flex-1 p-8 pt-6 space-y-4">

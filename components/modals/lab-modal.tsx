@@ -15,12 +15,15 @@ import {
 } from "@/components/ui/form";
 import { useLabModal } from "@/hooks/use-lab-modal";
 import { Button } from "@/components/ui/button";
+import { signOut } from "@/auth";
+import { logout } from "@/actions/logout";
 
 const formSchema = z.object({
   name: z.string().min(1),
 });
 
 export const LabModal = () => {
+
   const labModal = useLabModal();
 
   const [loading, setLoading] = useState(false);
@@ -69,12 +72,21 @@ export const LabModal = () => {
                     </FormItem>
                   )}
                 />
-                <div className="pt-6 space-x-2 flex items-center justify-end w-full">
-                  <Button disabled={loading} variant="outline" onClick={labModal.onClose}>
-                    Cancel
+                <div className="pt-6 flex items-center justify-between">
+                  <Button disabled={loading} type="button" variant="destructive" onClick={() => {
+                    logout();
+                    labModal.onClose
+                  }}>
+                    Logout
                   </Button>
-                  <Button disabled={loading} type="submit">Continue</Button>
+                  <div className="space-x-2 flex items-center justify-end w-full">
+                    <Button disabled={loading} variant="outline" onClick={labModal.onClose}>
+                      Cancel
+                    </Button>
+                    <Button disabled={loading} type="submit">Continue</Button>
+                  </div>
                 </div>
+
               </form>
             </Form>
           </div>

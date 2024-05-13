@@ -1,6 +1,6 @@
 "use client";
 
-import { 
+import {
   Card,
   CardContent,
   CardFooter,
@@ -38,7 +38,9 @@ export const CardWrapper = ({
           <Social />
         </CardFooter>
       )}
+
       <CardFooter>
+        <BackButton href={"/"} label={"Go back to homepage"} />
         <BackButton
           label={backButtonLabel}
           href={backButtonHref}

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, Home, PlusCircle, ScrollText } from "lucide-react"
+import { Check, ChevronsUpDown, Home, HomeIcon, PlusCircle, ScrollText } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -45,7 +45,7 @@ export default function LabSwitcher({ className, items = [] }: LabSwitcherProps)
 
   const onLabSelect = (lab: { value: string, label: string }) => {
     setOpen(false);
-    router.push(`/${lab.value}`);
+    router.push(`/admin/${lab.value}`);
   };
 
   return (
@@ -79,7 +79,7 @@ export default function LabSwitcher({ className, items = [] }: LabSwitcherProps)
                   onSelect={() => onLabSelect(lab)}
                   className="text-sm"
                 >
-                  <ScrollText className="mr-2 h-4 w-4" />
+                  <HomeIcon className="mr-2 h-4 w-4" />
                   {lab.label}
                   <Check
                     className={cn(

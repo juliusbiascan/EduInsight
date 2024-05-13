@@ -14,35 +14,25 @@ export function MainNav({
 
     const routes = [
         {
-            href: `/admin/${params.labId}`,
+            href: `/staff`,
             label: 'Overview',
-            active: pathname === `/admin/${params.labId}`,
+            active: pathname === `/staff`,
         },
         {
-            href: `/admin/${params.labId}/devices`,
-            label: 'Devices',
-            active: pathname === `/admin/${params.labId}/devices`,
-        },
-        {
-            href: `/admin/${params.labId}/monitoring`,
+            href: `/staff/monitoring`,
             label: 'Monitoring',
-            active: pathname === `/admin/${params.labId}/monitoring`,
+            active: pathname === `/staff/monitoring`,
         },
         {
-            href: `/admin/${params.labId}/staff`,
-            label: 'Manage Staff',
-            active: pathname === `/admin/${params.labId}/staff`,
+            href: `/staff/registration`,
+            label: 'Registration',
+            active: pathname === `/staff/registration`,
         },
         {
-            href: `/admin/${params.labId}/controlpanel`,
-            label: 'Control Panel',
-            active: pathname === `/admin/${params.labId}/controlpanel`,
-        },
-        {
-            href: `/admin/${params.labId}/settings`,
-            label: 'Settings',
-            active: pathname === `/admin/${params.labId}/settings`,
-        },
+            href: `/staff/in-out`,
+            label: 'In/Out',
+            active: pathname === `/staff/in-out`,
+        }
     ]
 
     return (

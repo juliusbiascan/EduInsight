@@ -1,3 +1,5 @@
+import { Button } from "react-day-picker";
+
 const AuthLayout = ({
   children
 }: {

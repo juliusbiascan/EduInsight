@@ -36,10 +36,12 @@ export default async function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <ToasterProvider />
             <ModalProvider />
+
             {children}
+
           </ThemeProvider>
         </body>
-      </html>
-    </SessionProvider>
+      </html >
+    </SessionProvider >
   )
 }

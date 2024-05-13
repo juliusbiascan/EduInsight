@@ -13,7 +13,7 @@ export default async function SetupLayout({
   const session = await auth()
 
   if (!session) {
-    redirect("/welcome")
+    redirect("/")
   }
 
   const lab = await db.labaratory.findFirst({
@@ -31,7 +31,7 @@ export default async function SetupLayout({
   if (lab && session.user.role == UserRole.ADMIN) {
     redirect(`/admin/${lab.id}`)
   } else if (user && session.user.role == UserRole.USER) {
-    redirect(`staff/${user.labId}`)
+    redirect(`/staff`)
   }
 
   return (
