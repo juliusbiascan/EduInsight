@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { useLabModal } from "@/hooks/use-lab-modal";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/auth";
 import { logout } from "@/actions/logout";
 
 const formSchema = z.object({

@@ -19,3 +19,13 @@ export const getUserById = async (id: string) => {
     return null;
   }
 };
+
+export const getDeviceUserById = async (id: string) => {
+  try {
+    const user = await db.deviceUser.findUnique({ where: { id } });
+
+    return user;
+  } catch {
+    return null;
+  }
+}

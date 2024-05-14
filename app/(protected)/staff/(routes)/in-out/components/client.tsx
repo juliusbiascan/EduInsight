@@ -1,17 +1,32 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@radix-ui/react-dropdown-menu";
-import { Scanner } from "@yudiel/react-qr-scanner";
-import { CSSProperties, useState } from "react";
+import { Scanner, useContinuousScanner, useDeviceList } from "@yudiel/react-qr-scanner";
+import { CSSProperties } from "react";
 import React from "react";
-import { SelectAvailableDevice } from "./select-available-device";
-import { SelectWebCamera } from "./select-scanner";
+import { useRouter } from "next/navigation";
+import { Check, ChevronsUpDown } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const InOutClient = () => {
 
-  const [qrResult, setQrResult] = useState("")
+  const router = useRouter();
+
   const styles: Record<string, CSSProperties> = {
     container: {
       width: '100%',
@@ -31,22 +46,14 @@ const InOutClient = () => {
     }
   };
 
+  const deviceList = useDeviceList();
+
+  const [open, setOpen] = React.useState(false)
+  const [value, setValue] = React.useState("")
+
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            In/Out
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Scan QR Code to login students/teachers
-          </p>
-        </div>
-      </div>
-
-      <Separator className="my-4" />
-
-      <div className="grid grid-cols-3 gap-4">
+      <div className="w-full grid md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>QR Scanner</CardTitle>
@@ -55,50 +62,70 @@ const InOutClient = () => {
           <CardContent>
             <Scanner
               styles={styles}
-              onResult={(result: any) => setQrResult(result)}
+              onResult={(text, result) => {
+                router.refresh()
+                router.push(`/staff/in-out/${text}`)
+                router.refresh()
+
+              }}
               onError={(error) => console.log(error?.message)}
+              options={(
+                {
+                  deviceId: value,
+                }
+              )}
             />
           </CardContent>
           <CardFooter>
-            <SelectWebCamera />
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full justify-between"
+                >
+                  {value
+                    ? deviceList?.find((deviceList) => deviceList.deviceId === value)?.label
+                    : "Select webcam..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search webcam..." />
+                  <CommandEmpty>No webcam found.</CommandEmpty>
+                  <CommandGroup>
+                    <CommandList>
+                      {deviceList?.map((deviceList) => (
+                        <CommandItem
+                          key={deviceList.deviceId}
+                          value={deviceList.deviceId}
+                          onSelect={(currentValue) => {
+                            setValue(currentValue === value ? "" : currentValue)
+                            setOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === deviceList.deviceId ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {deviceList.label}
+                        </CommandItem>
+                      ))}
+                    </CommandList>
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </CardFooter>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>User Info</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {qrResult}
-          </CardContent>
-          <CardFooter>
-            <p>Card Footer</p>
-          </CardFooter>
-        </Card>
-        <div className="grid grid-rows-2 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Available Devices</CardTitle>
-              <CardDescription>Select Available Device to Login</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SelectAvailableDevice />
-            </CardContent>
-            <CardFooter>
-              <div className="space-x-2 flex items-center justify-end w-full">
-                <Button className="w-full" variant={'destructive'}>
-                  OUT
-                </Button>
-                <Button className="w-full bg-green-700" variant={'default'}>
-                  IN
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
-      </div>
 
-    </>);
+      </div>
+    </>
+  );
 }
 
 export default InOutClient;

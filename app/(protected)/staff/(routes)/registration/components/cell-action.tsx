@@ -1,4 +1,4 @@
-"use Client"
+"use client"
 
 import {
     DropdownMenu,
@@ -16,6 +16,7 @@ import { useRouter, useParams } from "next/navigation"
 import { useState } from "react"
 import axios from "axios"
 import { AlertModal } from "@/components/modals/alert-modal"
+import { QRModal } from "@/components/modals/qr-modal"
 
 interface CellActionProps {
     data: RegistrationColumn
@@ -24,15 +25,12 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
+    const [openQR, setOpenQR] = useState(false);
 
     const router = useRouter();
     const params = useParams();
 
-    const onCopy = (id: string) => {
-        navigator.clipboard.writeText(id);
-        toast.success('User Id copied to the clipboard.')
-    }
 
     const onDelete = async () => {
         try {
@@ -44,17 +42,25 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             toast.error('Error deleting');
         } finally {
             setLoading(false);
-            setOpen(false);
+            setOpenAlert(false);
         }
     }
 
     return (
         <>
             <AlertModal
-                isOpen={open}
-                onClose={() => setOpen(false)}
+                isOpen={openAlert}
+                onClose={() => setOpenAlert(false)}
                 onConfirm={onDelete}
                 loading={loading} />
+
+            <QRModal
+                isOpen={openQR}
+                onClose={() => setOpenQR(false)}
+                onConfirm={onDelete}
+                loading={loading}
+                data={data} />
+
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="w-8 h-8 p-0">
@@ -66,7 +72,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     <DropdownMenuLabel>
                         Actions
                     </DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => onCopy(data.id)}>
+
+                    <DropdownMenuItem onClick={() => setOpenQR(true)}>
                         <Copy className="w-4 h-4 mr-2" />
                         Generate QR
                     </DropdownMenuItem>
@@ -74,7 +81,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                         <Edit className="w-4 h-4 mr-2" />
                         Update
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-500" onClick={() => setOpen(true)}>
+                    <DropdownMenuItem className="text-red-500" onClick={() => setOpenAlert(true)}>
                         <Trash className="w-4 h-4 mr-2" />
                         Delete
                     </DropdownMenuItem>
