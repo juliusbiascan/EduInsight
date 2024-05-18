@@ -16,7 +16,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const lab = await db.labaratory.findFirst({

@@ -32,7 +32,7 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="en">
-        <body className={inter.className}>
+        <body className={inter.className} suppressHydrationWarning={true}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <ToasterProvider />
             <ModalProvider />

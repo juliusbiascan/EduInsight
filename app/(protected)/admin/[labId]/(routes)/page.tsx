@@ -7,6 +7,9 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { Overview } from "../components/overview";
+import { getAllDevice, getTotalDevices } from "@/data/device";
+import { getActiveCount } from "@/actions/staff";
+import { getAllDeviceUserCount } from "@/data/user";
 
 interface DashboardPageProps {
   params: {
@@ -21,7 +24,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
   const session = await auth();
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const lab = await db.labaratory.findFirst({
@@ -35,6 +38,10 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
   if (!lab) {
     redirect('/');
   };
+
+  const allDevices = await getTotalDevices(params.labId);
+  const activeCount = await getActiveCount(params.labId);
+  const allUser = await getAllDeviceUserCount(params.labId);
 
   return (
     <>
@@ -108,7 +115,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                     </svg>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">+60</div>
+                    <div className="text-2xl font-bold">+{allUser}</div>
                     <p className="text-xs text-muted-foreground">
                       +180.1% from last month
                     </p>
@@ -132,9 +139,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                     </svg>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">+50</div>
+                    <div className="text-2xl font-bold">+{allDevices}</div>
                     <p className="text-xs text-muted-foreground">
-                      +19% from last month
+                      +{allDevices} on this month
                     </p>
                   </CardContent>
                 </Card>
@@ -157,9 +164,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                     </svg>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">+573</div>
+                    <div className="text-2xl font-bold">+{activeCount}</div>
                     <p className="text-xs text-muted-foreground">
-                      +201 since last hour
+                      +{allDevices} on this month
                     </p>
                   </CardContent>
                 </Card>

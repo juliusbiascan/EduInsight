@@ -119,8 +119,10 @@ model Device {
 model DeviceUser {
   id        String         @id @default(uuid())
   labId     String
-  name      String
-  image     String
+  schoolId  String         @unique
+  firstName String
+  lastName  String
+  image     String         @db.LongText
   role      DeviceUserRole @default(GUEST)
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt

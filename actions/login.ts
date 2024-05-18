@@ -8,18 +8,19 @@ import { signIn } from "@/auth";
 import { LoginSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/user";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
-import { 
+import {
   sendVerificationEmail,
   sendTwoFactorTokenEmail,
 } from "@/lib/mail";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { 
+import {
   generateVerificationToken,
   generateTwoFactorToken
 } from "@/lib/tokens";
-import { 
+import {
   getTwoFactorConfirmationByUserId
 } from "@/data/two-factor-confirmation";
+import { sendTwoFactorTokenSms } from "@/lib/sms";
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
@@ -93,11 +94,14 @@ export const login = async (
       });
     } else {
       const twoFactorToken = await generateTwoFactorToken(existingUser.email)
-      await sendTwoFactorTokenEmail(
-        twoFactorToken.email,
+      // await sendTwoFactorTokenEmail(
+      //   twoFactorToken.email,
+      //   twoFactorToken.token,
+      // );
+      await sendTwoFactorTokenSms(
+        "09928322637",
         twoFactorToken.token,
       );
-
       return { twoFactor: true };
     }
   }

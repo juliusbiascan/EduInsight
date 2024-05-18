@@ -1,3 +1,4 @@
+import { getStudentCount, getTeacherCount, getGuestCount, getActiveCount } from "@/actions/staff";
 import { auth } from "@/auth";
 import { Overview } from "@/components/overview";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -5,7 +6,7 @@ import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db";
-import { CreditCard, DollarSign, Package } from "lucide-react";
+import { ActivitySquareIcon, User } from "lucide-react";
 import { redirect } from "next/navigation";
 
 interface DashboardPageProps {
@@ -34,17 +35,16 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
     { name: 'Dec', total: 10 }
   ];
 
-
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const user = await getUserById(session.user.id);
 
   if (!user) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const lab = await db.labaratory.findUnique({
@@ -57,48 +57,67 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
     redirect("/")
   }
 
+
+  const activeCount = await getActiveCount(lab.id);
+  const studentCount = await getStudentCount(lab.id);
+  const teacherCount = await getTeacherCount(lab.id);
+  const guestCount = await getGuestCount(lab.id);
+
   return (
     <div className="flex-col">
       <div className="flex-1 p-8 pt-6 space-y-4">
         <Heading title="Dashboard" description="Overview of labaratory" />
         <Separator />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">
                 Active Now
               </CardTitle>
-              <DollarSign className="w-4 h-4 text-muted-foreground" />
+              <ActivitySquareIcon className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                20
+                {activeCount}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">
-                Students
+                Total Students
               </CardTitle>
-              <CreditCard className="w-4 h-4 text-muted-foreground" />
+              <User className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                20
+                {studentCount}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">
-                Teachers
+                Total Teachers
               </CardTitle>
-              <Package className="w-4 h-4 text-muted-foreground" />
+              <User className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                20
+                {teacherCount}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium">
+                Total Guest
+              </CardTitle>
+              <User className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {guestCount}
               </div>
             </CardContent>
           </Card>
@@ -117,3 +136,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
 }
 
 export default DashboardPage
+
+function getGuestRevenue(storeId: any) {
+  throw new Error("Function not implemented.");
+}

@@ -14,13 +14,13 @@ const Navbar = async () => {
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const user = await getUserById(session.user.id);
 
   if (!user) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const lab = await db.labaratory.findUnique({
@@ -36,12 +36,14 @@ const Navbar = async () => {
   return (
     <div className='border-b'>
       <div className='flex items-center h-16 px-4 gap-4'>
+        <MobileNav />
+
         <Image src={"/smnhs_logo.png"} alt={'logo'} width={50} height={50} />
 
         <h2 className=''>{lab.name}</h2>
 
         <MainNav className='mx-6' />
-        <MobileNav />
+
         <div className='flex items-center ml-auto space-x-4'>
           <ThemeToggle />
           <UserButton />

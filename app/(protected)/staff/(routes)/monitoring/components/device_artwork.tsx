@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { PlusCircledIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 import {
@@ -7,37 +6,40 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
-
-import { Album } from "../data/album"
+import { ActiveDeviceUser, State } from "@prisma/client"
+import { getDeviceUserById } from "@/data/user"
+import { getDeviceById } from "@/data/device"
 
 interface DeviceArtworkProps extends React.HTMLAttributes<HTMLDivElement> {
-  album: Album
+  activeDevice: ActiveDeviceUser
   aspectRatio?: "portrait" | "square"
   width?: number
   height?: number
 }
 
-export function DeviceArtwork({
-  album,
+export async function DeviceArtwork({
+  activeDevice,
   aspectRatio = "portrait",
   width,
   height,
   className,
   ...props
 }: DeviceArtworkProps) {
+
+  const user = await getDeviceUserById(activeDevice.userId);
+
+  const device = await getDeviceById(activeDevice.deviceId);
+
   return (
     <div className={cn("space-y-3", className)} {...props}>
       <ContextMenu>
         <ContextMenuTrigger>
           <div className="overflow-hidden rounded-md">
             <Image
-              src={album.cover}
-              alt={album.name}
+              src={activeDevice.state == State.INACTIVE ? "/preferences-desktop-display.png" : "/preferences-desktop-display-blue.png"}
+              alt={""}
               width={width}
               height={height}
               className={cn(
@@ -61,8 +63,8 @@ export function DeviceArtwork({
         </ContextMenuContent>
       </ContextMenu>
       <div className="space-y-1 text-sm">
-        <h3 className="font-medium leading-none">{album.name}</h3>
-        <p className="text-xs text-muted-foreground">{album.artist}</p>
+        <h3 className="font-medium leading-none">{device?.name}</h3>
+        <p className="text-xs text-muted-foreground">{user?.firstName} {user?.lastName}</p>
       </div>
     </div>
   )

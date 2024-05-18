@@ -20,7 +20,9 @@ export async function POST(
     const { id } = session.user;
 
     const {
-      name,
+      schoolId,
+      firstName,
+      lastName,
       image,
       role
     } = body;
@@ -29,8 +31,16 @@ export async function POST(
       return new NextResponse("Unauthenticated", { status: 401 });
     }
 
-    if (!name) {
-      return new NextResponse("Name is required", { status: 400 });
+    if (!schoolId) {
+      return new NextResponse("School is required", { status: 400 });
+    }
+
+    if (!firstName) {
+      return new NextResponse("FirstName is required", { status: 400 });
+    }
+
+    if (!lastName) {
+      return new NextResponse("LastName is required", { status: 400 });
     }
 
     if (!image) new NextResponse("Image is required", { status: 400 });
@@ -45,7 +55,9 @@ export async function POST(
     const device = await db.deviceUser.create({
       data: {
         labId: params.labId,
-        name,
+        schoolId,
+        firstName,
+        lastName,
         image,
         role: role == "GUEST" ? DeviceUserRole.GUEST : role == "STUDENT" ? DeviceUserRole.STUDENT : DeviceUserRole.TEACHER,
       }

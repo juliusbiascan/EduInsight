@@ -11,13 +11,13 @@ const RegistrationPage = async () => {
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const user = await getUserById(session.user.id);
 
   if (!user) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const lab = await db.labaratory.findUnique({
@@ -42,7 +42,9 @@ const RegistrationPage = async () => {
   const formattedDevices: RegistrationColumn[] = devUser.map(item => ({
     id: item.id,
     labId: item.labId,
-    name: item.name,
+    schoolId: item.schoolId,
+    firstName: item.firstName,
+    lastName: item.lastName,
     image: item.image,
     role: item.role,
     createdAt: format(item.createdAt, "MMMM do, yyyy"),

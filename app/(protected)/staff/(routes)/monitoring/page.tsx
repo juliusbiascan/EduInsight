@@ -12,7 +12,7 @@ const Monitoring = async ({
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   return (

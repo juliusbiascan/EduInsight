@@ -1,128 +1,204 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Scanner, useContinuousScanner, useDeviceList } from "@yudiel/react-qr-scanner";
-import { CSSProperties } from "react";
-import React from "react";
-import { useRouter } from "next/navigation";
-import { Check, ChevronsUpDown } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { ScannerModal } from "@/components/modals/scanner-modal";
+import { getDeviceUserBySchoolId } from "@/data/user";
+import { Device, DeviceUser } from "@prisma/client";
+import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
+import { getAllDevice } from "@/data/device";
+import { DeviceUserForm } from "@/schemas";
+import { FormError } from "@/components/form-error";
+import { FormSuccess } from "@/components/form-success";
+import { getUserState } from "@/actions/staff";
+import { ClockInModal } from "@/components/modals/clockin-modal";
+import { useRouter } from "next/navigation";
+
 
 const InOutClient = () => {
 
-  const router = useRouter();
 
-  const styles: Record<string, CSSProperties> = {
-    container: {
-      width: '100%',
-      paddingTop: '100%',
-      overflow: 'hidden',
-      position: 'relative'
-    },
-    video: {
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      display: 'block',
-      overflow: 'hidden',
-      position: 'absolute',
-      objectFit: 'cover'
+  const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [user, setUser] = useState<DeviceUser | null>();
+  const [devices, setDevices] = useState<Device[] | null>([]);
+  const [state, setState] = useState(false);
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<z.infer<typeof DeviceUserForm>>({
+    resolver: zodResolver(DeviceUserForm),
+    defaultValues: {
+      schoolId: '',
     }
-  };
+  });
 
-  const deviceList = useDeviceList();
+  const onResult = async (userId: string) => {
 
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+    setError("");
+    setSuccess("");
+
+    startTransition(async () => {
+      try {
+        const user = await getDeviceUserBySchoolId(userId);
+
+        if (!user) {
+          toast.error("User not found")
+          return;
+        }
+
+        const devices = await getAllDevice(user.labId);
+
+        if (!devices) {
+          toast.error("Device not found")
+          return;
+        }
+
+        const state = await getUserState(userId);
+
+        setState(state == 1);
+        setDevices(devices);
+        setUser(user);
+
+        setOpen2(true);
+
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong.');
+      } finally {
+        setOpen(false);
+      }
+    });
+  }
+
+  const onSubmit = async (data: z.infer<typeof DeviceUserForm>) => {
+
+    setError("");
+    setSuccess("");
+    startTransition(async () => {
+
+      try {
+
+        const user = await getDeviceUserBySchoolId(data.schoolId);
+
+        if (!user) {
+          toast.error("User not found")
+          return;
+        }
+
+        const devices = await getAllDevice(user.labId);
+
+        if (!devices) {
+          toast.error("Device not found")
+          return;
+        }
+        const state = await getUserState(user.id);
+
+        setState(state == 1);
+        setDevices(devices);
+        setUser(user);
+        setOpen2(true);
+      } catch (err) {
+        console.log(err);
+        toast.error(`Something went wrong.`);
+      }
+    });
+  }
+
+
+  const onConfirm = (error: string | undefined, success: string | undefined) => {
+    setError(error);
+    setSuccess(success);
+    setOpen2(false);
+
+
+  }
 
   return (
     <>
-      <div className="w-full grid md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>QR Scanner</CardTitle>
-            <CardDescription>Scan QR Code via Webcam</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Scanner
-              styles={styles}
-              onResult={(text, result) => {
-                router.refresh()
-                router.push(`/staff/in-out/${text}`)
-                router.refresh()
+      <ScannerModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onResult={(result) => onResult(result)}
+        loading={isPending} />
 
-              }}
-              onError={(error) => console.log(error?.message)}
-              options={(
-                {
-                  deviceId: value,
-                }
-              )}
-            />
-          </CardContent>
-          <CardFooter>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-full justify-between"
-                >
-                  {value
-                    ? deviceList?.find((deviceList) => deviceList.deviceId === value)?.label
-                    : "Select webcam..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
-                  <CommandInput placeholder="Search webcam..." />
-                  <CommandEmpty>No webcam found.</CommandEmpty>
-                  <CommandGroup>
-                    <CommandList>
-                      {deviceList?.map((deviceList) => (
-                        <CommandItem
-                          key={deviceList.deviceId}
-                          value={deviceList.deviceId}
-                          onSelect={(currentValue) => {
-                            setValue(currentValue === value ? "" : currentValue)
-                            setOpen(false)
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              value === deviceList.deviceId ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {deviceList.label}
-                        </CommandItem>
-                      ))}
-                    </CommandList>
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </CardFooter>
-        </Card>
 
+      {(user && devices) && <ClockInModal
+        isOpen={open2}
+        onClose={() => setOpen2(false)}
+        onConfirm={onConfirm}
+        loading={isPending}
+        devices={devices}
+        user={user}
+        state={state}
+      />
+      }
+
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            In/Out
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Grant access to user to use device
+          </p>
+        </div>
+      </div>
+      <Separator className="my-4" />
+      <FormError message={error} />
+      <FormSuccess message={success} />
+      <div className="relative">
+        <div className="grid grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>QR Scanner</CardTitle>
+              <CardDescription>Scan QR Code via Webcam</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                className="w-full"
+                variant={'outline'}
+                onClick={() => setOpen(true)}>
+                Scan
+              </Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Manual Input</CardTitle>
+              <CardDescription>Input School ID to search users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+                  <FormField
+                    control={form.control}
+                    name="schoolId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>School ID</FormLabel>
+                        <FormControl>
+                          <Input disabled={isPending} placeholder='Input school id' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  <Button disabled={isPending} className='w-full ml-auto' type='submit'>
+                    Search
+                  </Button>
+                </form>
+              </Form >
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );

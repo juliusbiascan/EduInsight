@@ -7,20 +7,34 @@ import { DeviceUserRole } from '@prisma/client';
 export type RegistrationColumn = {
   id: string
   labId: string
-  name: string
+  schoolId: string
+  firstName: string
+  lastName: string
   image: string
   role: DeviceUserRole
   createdAt: string
 }
 
 export const columns: ColumnDef<RegistrationColumn>[] = [
+  // {
+  //   accessorKey: 'image',
+  //   header: 'Avatar',
+  // },
   {
-    accessorKey: 'name',
-    header: 'Name',
+    accessorKey: 'schoolId',
+    header: 'School ID',
+  },
+  {
+    accessorKey: 'firstName',
+    header: 'Fist Name',
+  },
+  {
+    accessorKey: 'lastName',
+    header: 'Last Name',
   },
   {
     accessorKey: 'role',
-    header: 'Role',
+    header: 'Registered as',
   },
   {
     accessorKey: 'createdAt',

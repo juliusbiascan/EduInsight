@@ -31,7 +31,6 @@ export const RegistrationClient: React.FC<RegistrationClientProps> = ({
       </div>
       <Separator />
       <DataTable columns={columns} data={data} searchKey="name" />
-
     </>
   )
 }

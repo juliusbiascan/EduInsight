@@ -1,24 +1,28 @@
-"use client"
-
-import { Button } from "@/components/ui/button"
-import { Heading } from "@/components/ui/heading"
 import { Separator } from "@/components/ui/separator"
-import { Plus } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
-import { DataTable } from "@/components/ui/data-table"
-import { ApiList } from "@/components/ui/api-list"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { activeDeviceAlbums, inactiveDeviceAlbums } from "../data/album"
 import { DeviceArtwork } from "./device_artwork"
+import { getAllActiveUserDevice, getAllInactiveUserDevice } from "@/data/device"
 
 interface MonitoringClientProps {
+  labId: string;
 }
 
-export const MonitoringClient: React.FC<MonitoringClientProps> = ({
-
+export const MonitoringClient: React.FC<MonitoringClientProps> = async ({
+  labId
 }) => {
-  const router = useRouter();
-  const params = useParams();
+
+  const allActiveDevice = await getAllActiveUserDevice(labId);
+
+  if (!allActiveDevice) {
+    return null;
+  }
+
+  const allInactiveDevice = await getAllInactiveUserDevice(labId);
+
+  if (!allInactiveDevice) {
+    return null;
+  }
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -35,10 +39,10 @@ export const MonitoringClient: React.FC<MonitoringClientProps> = ({
       <div className="relative">
         <ScrollArea>
           <div className="flex space-x-4 pb-4">
-            {activeDeviceAlbums.map((album) => (
+            {allActiveDevice.map((album) => (
               <DeviceArtwork
-                key={album.name}
-                album={album}
+                key={album.id}
+                activeDevice={album}
                 className="w-[250px]"
                 aspectRatio="portrait"
                 width={250}
@@ -61,10 +65,10 @@ export const MonitoringClient: React.FC<MonitoringClientProps> = ({
       <div className="relative">
         <ScrollArea>
           <div className="flex space-x-4 pb-4">
-            {inactiveDeviceAlbums.map((album) => (
+            {allInactiveDevice.map((album) => (
               <DeviceArtwork
-                key={album.name}
-                album={album}
+                key={album.id}
+                activeDevice={album}
                 className="w-[150px]"
                 aspectRatio="square"
                 width={150}

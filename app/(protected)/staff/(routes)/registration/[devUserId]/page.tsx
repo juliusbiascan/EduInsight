@@ -9,7 +9,7 @@ const DevUserRegistrationPage = async ({ params }: { params: { devUserId: string
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const devUser = await db.deviceUser.findUnique({
@@ -21,7 +21,7 @@ const DevUserRegistrationPage = async ({ params }: { params: { devUserId: string
   const user = await getUserById(session.user.id);
 
   if (!user) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
   const lab = await db.labaratory.findUnique({

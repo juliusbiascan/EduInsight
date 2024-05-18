@@ -63,3 +63,18 @@ export const RegisterSchema = z.object({
     message: "Name is required",
   }),
 });
+
+export const ClockInSchema = z.object({
+  userId: z.string().min(1, {
+    message: "UserId is required",
+  }),
+  deviceId: z.string().min(1, {
+    message: "DeviceId required",
+  }),
+});
+
+export const DeviceUserForm = z.object({
+  schoolId: z.string().min(1),
+})
+
+
