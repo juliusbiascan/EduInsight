@@ -47,7 +47,7 @@ export const ClockInModal: React.FC<ClockInModalProps> = ({
     resolver: zodResolver(ClockInSchema),
     defaultValues: (user && devices) ? {
       userId: user.id,
-      deviceId: devices[0].id,
+      deviceId: '',
     } : {
       userId: '',
       deviceId: '',

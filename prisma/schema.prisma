@@ -110,6 +110,7 @@ model Device {
   devHostname   String
   devMACaddress String
   isArchived    Boolean
+  isUsed        Boolean    @default(false)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -134,4 +135,12 @@ model ActiveDeviceUser {
   userId   String
   deviceId String
   state    State  @default(INACTIVE)
+}
+
+model ActiveUserLogs {
+  id                 String   @id @default(uuid())
+  labId              String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  activeDeviceUserId String
 }

@@ -70,7 +70,8 @@ export async function POST(
         email,
         password: hashedPassword,
         isTwoFactorEnabled,
-        labId: params.labId
+        labId: params.labId,
+        emailVerified: new Date(),
       }
     })
 

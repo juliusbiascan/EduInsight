@@ -69,9 +69,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
       } else {
         await axios.post(`/api/${params.labId}/users`, data)
       }
-      router.refresh();
       router.push(`/admin/${params.labId}/staff`);
       toast.success(toastMessage)
+      router.refresh();
+
     } catch (err) {
       toast.error("Something went wrong.");
     } finally {
@@ -83,9 +84,9 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     try {
       setLoading(true);
       await axios.delete(`/api/${params.labId}/users/${params.userId}`)
-      router.refresh();
       router.push(`/admin/${params.labId}/users`)
       toast.success("Account deleted.")
+      router.refresh();
     } catch (err) {
       toast.error("Something Went Wrong.");
     } finally {

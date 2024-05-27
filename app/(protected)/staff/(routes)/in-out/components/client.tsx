@@ -19,7 +19,6 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { getUserState } from "@/actions/staff";
 import { ClockInModal } from "@/components/modals/clockin-modal";
-import { useRouter } from "next/navigation";
 
 
 const InOutClient = () => {
@@ -63,13 +62,10 @@ const InOutClient = () => {
         }
 
         const state = await getUserState(userId);
-
         setState(state == 1);
         setDevices(devices);
         setUser(user);
-
         setOpen2(true);
-
       } catch (error) {
         console.log(error);
         toast.error('Something went wrong.');
@@ -118,8 +114,6 @@ const InOutClient = () => {
     setError(error);
     setSuccess(success);
     setOpen2(false);
-
-
   }
 
   return (

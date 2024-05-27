@@ -5,7 +5,7 @@ import { State } from "@prisma/client";
 
 export const getAllDevice = async (labId: string) => {
   try {
-    const device = await db.device.findMany({ where: { labId } });
+    const device = await db.device.findMany({ where: { labId, isUsed: false, } });
     return device;
   } catch {
     return null;
@@ -30,6 +30,14 @@ export const getDeviceById = async (devId: string) => {
   }
 };
 
+export const getActiveUserDevice = async (userId: string) => {
+  try {
+    const device = await db.activeDeviceUser.findUnique({ where: { id: userId } });
+    return device;
+  } catch {
+    return null;
+  }
+};
 export const getAllActiveUserDevice = async (labId: string) => {
   try {
     const device = await db.activeDeviceUser.findMany({ where: { labId, state: State.ACTIVE } });

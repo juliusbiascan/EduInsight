@@ -32,6 +32,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       email,
       role: UserRole.ADMIN,
       password: hashedPassword,
+      emailVerified: new Date()
     },
   });
 

@@ -1,45 +1,74 @@
+"use client"
+
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { DeviceArtwork } from "./device_artwork"
-import { getAllActiveUserDevice, getAllInactiveUserDevice } from "@/data/device"
+import { getAllActiveUserDevice } from "@/data/device"
+import { Heading } from "@/components/ui/heading";
+import { Button } from "@/components/ui/button";
+import { LogOut, Trash } from "lucide-react";
+import { useEffect, useState } from "react"
+import { ActiveDeviceUser } from "@prisma/client"
+import { logoutUser } from "@/actions/logout"
+import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 interface MonitoringClientProps {
-  labId: string;
+  labId: string | null;
 }
 
-export const MonitoringClient: React.FC<MonitoringClientProps> = async ({
+export const MonitoringClient: React.FC<MonitoringClientProps> = ({
   labId
 }) => {
 
-  const allActiveDevice = await getAllActiveUserDevice(labId);
+  const router = useRouter()
+  const [allActiveDevice, setAllActiveDevice] = useState<ActiveDeviceUser[]>()
 
-  if (!allActiveDevice) {
-    return null;
-  }
+  useEffect(() => {
+    const fetch = async () => {
+      if (labId) {
+        const allActiveDevice = await getAllActiveUserDevice(labId);
+        if (allActiveDevice)
+          setAllActiveDevice([...allActiveDevice])
+      }
 
-  const allInactiveDevice = await getAllInactiveUserDevice(labId);
+    }
+    fetch();
+  }, [labId]);
 
-  if (!allInactiveDevice) {
-    return null;
-  }
+  // const allInactiveDevice = await getAllInactiveUserDevice(labId);
+
+  // if (!allInactiveDevice) {
+  //   return null;
+  // }
 
   return (
     <>
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Active Now
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Monitor Active Devices
-          </p>
-        </div>
+        <Heading title="Active Now" description="Monitor Active Device Users" />
+        <Button
+          // disabled={loading}
+          variant="destructive"
+          size="sm"
+          onClick={() => {
+            {
+              allActiveDevice && allActiveDevice.map((activeDevice) => {
+                logoutUser(activeDevice.userId, activeDevice.deviceId).then((message) => {
+                  router.refresh()
+                })
+              })
+            }
+          }}
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
       </div>
+
       <Separator className="my-4" />
       <div className="relative">
         <ScrollArea>
           <div className="flex space-x-4 pb-4">
-            {allActiveDevice.map((album) => (
+            {allActiveDevice && allActiveDevice.map((album) => (
               <DeviceArtwork
                 key={album.id}
                 activeDevice={album}
@@ -53,7 +82,7 @@ export const MonitoringClient: React.FC<MonitoringClientProps> = async ({
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>
-      <div className="mt-6 space-y-1">
+      {/* <div className="mt-6 space-y-1">
         <h2 className="text-2xl font-semibold tracking-tight">
           Offline
         </h2>
@@ -78,7 +107,7 @@ export const MonitoringClient: React.FC<MonitoringClientProps> = async ({
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      </div>
+      </div> */}
     </>
   )
 }

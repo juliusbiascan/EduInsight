@@ -68,9 +68,9 @@ export const DeviceForm: React.FC<DeviceFormProps> = ({
       } else {
         await axios.post(`/api/${params.labId}/devices`, data)
       }
-      router.refresh();
       router.push(`/admin/${params.labId}/devices`);
       toast.success(toastMessage)
+      router.refresh();
     } catch (err) {
       toast.error("Something went wrong.");
     } finally {

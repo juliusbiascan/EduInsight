@@ -2,14 +2,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RecentUsers } from "../components/recent-users";
+import { RecentUsers, RecentUsersType } from "../components/recent-users";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { Overview } from "../components/overview";
 import { getAllDevice, getTotalDevices } from "@/data/device";
 import { getActiveCount } from "@/actions/staff";
-import { getAllDeviceUserCount } from "@/data/user";
+import { getAllDeviceUserCount, getDeviceUserById } from "@/data/user";
+import { getGraphLogins, getRecentLogins } from "@/data/get-graph-count";
+import { format } from "date-fns";
 
 interface DashboardPageProps {
   params: {
@@ -42,6 +44,16 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
   const allDevices = await getTotalDevices(params.labId);
   const activeCount = await getActiveCount(params.labId);
   const allUser = await getAllDeviceUserCount(params.labId);
+  const graphLogin = await getGraphLogins(params.labId);
+  const recentLogin = await getRecentLogins(params.labId);
+
+
+  const formattedRecentLogin: RecentUsersType[] = recentLogin.map(item => ({
+    id: item.id,
+    labId: item.labId,
+    activeDeviceUserId: item.activeDeviceUserId,
+    createdAt: item.createdAt,
+  }));
 
   return (
     <>
@@ -88,7 +100,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                     </svg>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">30</div>
+                    <div className="text-2xl font-bold">+{recentLogin.length}</div>
                     <p className="text-xs text-muted-foreground">
                       +20.1% from last month
                     </p>
@@ -177,7 +189,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                     <CardTitle>Overview</CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <Overview />
+                    <Overview data={graphLogin} />
                   </CardContent>
                 </Card>
                 <Card className="col-span-4">
@@ -188,10 +200,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RecentUsers />
+                    <RecentUsers data={formattedRecentLogin} />
                   </CardContent>
                 </Card>
-
               </div>
             </TabsContent>
           </Tabs>

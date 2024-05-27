@@ -22,7 +22,7 @@ export const getUserById = async (id: string) => {
   }
 };
 
-export const getDeviceUserById = async (id: string) => {
+export const getDeviceUserById = async (id: string | undefined) => {
   try {
     const user = await db.deviceUser.findUnique({ where: { id } });
 

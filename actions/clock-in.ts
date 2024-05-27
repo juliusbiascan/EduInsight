@@ -4,6 +4,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { ClockInSchema } from "@/schemas";
 import { State } from "@prisma/client";
+import { create } from "domain";
 
 export const clockIn = async (values: z.infer<typeof ClockInSchema>) => {
 
@@ -30,6 +31,15 @@ export const clockIn = async (values: z.infer<typeof ClockInSchema>) => {
       }
     });
 
+    await db.device.updateMany({
+      where: {
+        id: deviceId,
+      },
+      data: {
+        isUsed: false
+      }
+    });
+
     return { success: "User logout successfully" };
   }
 
@@ -44,13 +54,29 @@ export const clockIn = async (values: z.infer<typeof ClockInSchema>) => {
     return { error: "Device already in used!" };
   }
 
-  await db.activeDeviceUser.create({
+  const user = await db.activeDeviceUser.create({
     data: {
       labId: device.labId,
       deviceId,
       userId,
       state: State.ACTIVE
     },
+  });
+
+  await db.device.updateMany({
+    where: {
+      id: deviceId,
+    },
+    data: {
+      isUsed: true
+    }
+  });
+
+  await db.activeUserLogs.create({
+    data: {
+      labId: device.labId,
+      activeDeviceUserId: user.id
+    }
   });
 
   return { success: "User login successfully" };

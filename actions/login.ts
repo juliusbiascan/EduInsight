@@ -20,7 +20,7 @@ import {
 import {
   getTwoFactorConfirmationByUserId
 } from "@/data/two-factor-confirmation";
-import { sendTwoFactorTokenSms } from "@/lib/sms";
+//import { sendTwoFactorTokenSms } from "@/lib/sms";
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
@@ -94,14 +94,14 @@ export const login = async (
       });
     } else {
       const twoFactorToken = await generateTwoFactorToken(existingUser.email)
-      // await sendTwoFactorTokenEmail(
-      //   twoFactorToken.email,
-      //   twoFactorToken.token,
-      // );
-      await sendTwoFactorTokenSms(
-        "09928322637",
+      await sendTwoFactorTokenEmail(
+        twoFactorToken.email,
         twoFactorToken.token,
       );
+      // await sendTwoFactorTokenSms(
+      //   "09928322637",
+      //   twoFactorToken.token,
+      // );
       return { twoFactor: true };
     }
   }

@@ -4,6 +4,7 @@ import { Overview } from "@/components/overview";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
+import { getGraphLogins } from "@/data/get-graph-count";
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db";
 import { ActivitySquareIcon, User } from "lucide-react";
@@ -14,26 +15,6 @@ interface DashboardPageProps {
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
-
-  interface GraphData {
-    name: string;
-    total: number;
-  }
-
-  const graphRevenue: GraphData[] = [
-    { name: 'Jan', total: 12 },
-    { name: 'Feb', total: 10 },
-    { name: 'Mar', total: 20 },
-    { name: 'Apr', total: 40 },
-    { name: 'May', total: 15 },
-    { name: 'Jun', total: 18 },
-    { name: 'Jul', total: 19 },
-    { name: 'Aug', total: 30 },
-    { name: 'Sep', total: 50 },
-    { name: 'Oct', total: 35 },
-    { name: 'Nov', total: 3 },
-    { name: 'Dec', total: 10 }
-  ];
 
   const session = await auth()
 
@@ -57,7 +38,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
     redirect("/")
   }
 
-
+  const graphLogin = await getGraphLogins(lab.id);
   const activeCount = await getActiveCount(lab.id);
   const studentCount = await getStudentCount(lab.id);
   const teacherCount = await getTeacherCount(lab.id);
@@ -127,7 +108,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <Overview data={graphRevenue} />
+            <Overview data={graphLogin} />
           </CardContent>
         </Card>
       </div>
