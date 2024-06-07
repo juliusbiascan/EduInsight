@@ -1,3 +1,6 @@
 [submodule "noVNC"]
 	path = noVNC
 	url = https://github.com/novnc/noVNC.git
+[submodule "react-qr-scanner"]
+	path = react-qr-scanner
+	url = https://github.com/yudielcurbelo/react-qr-scanner.git
