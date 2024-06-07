@@ -11,6 +11,9 @@ export const getRecentLogins = async (labId: string) => {
     where: {
       labId,
     },
+    orderBy: {
+      createdAt: 'desc'
+    }
   });
 
   return userLogs
@@ -21,6 +24,13 @@ export const getGraphLogins = async (labId: string) => {
   const userLogs = await db.activeUserLogs.findMany({
     where: {
       labId,
+      // createdAt: {
+      //   lte: from,
+      //   gte: to,
+      // }
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
   });
 

@@ -41,6 +41,18 @@ export const getDeviceUserBySchoolId = async (schoolId: string) => {
     return null;
   }
 }
+export const getActiveDeviceUserByUserId = async (userId: string) => {
+  try {
+    const user = await db.activeDeviceUser.findFirst({
+      where: {
+        userId,
+      }
+    });
+    return user;
+  } catch {
+    return null;
+  }
+}
 
 export const getAllDeviceUserCount = async (labId: string) => {
   try {

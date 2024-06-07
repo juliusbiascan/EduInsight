@@ -20,17 +20,21 @@ import toast from "react-hot-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface DeviceArtworkProps extends React.HTMLAttributes<HTMLDivElement> {
-  activeDevice: ActiveDeviceUser
+  activeDevice?: ActiveDeviceUser
+  inactiveDevice?: Device
   aspectRatio?: "portrait" | "square"
   width?: number
   height?: number
+  onChanged: () => void
 }
 
 export function DeviceArtwork({
   activeDevice,
+  inactiveDevice,
   aspectRatio = "portrait",
   width,
   height,
+  onChanged,
   className,
   ...props
 }: DeviceArtworkProps) {
@@ -43,17 +47,18 @@ export function DeviceArtwork({
 
   useEffect(() => {
     const fetchData = async () => {
-      const user = await getDeviceUserById(activeDevice.userId);
-      setUser(user)
-
-      const device = await getDeviceById(activeDevice.deviceId);
+      if (activeDevice) {
+        const user = await getDeviceUserById(activeDevice.userId);
+        setUser(user)
+      }
+      const device = await getDeviceById(activeDevice ? activeDevice.deviceId : inactiveDevice ? inactiveDevice.id : '');
       setDevice(device)
     }
     startTransition(() => {
       fetchData();
     })
 
-  }, [activeDevice.userId, activeDevice.deviceId]);
+  }, [activeDevice, inactiveDevice]);
 
   return (
     <>
@@ -62,7 +67,7 @@ export function DeviceArtwork({
           <ContextMenuTrigger>
             <div className="overflow-hidden rounded-md">
               {isPending ? <Skeleton className="h-40 w-40" /> : <Image
-                src={activeDevice.state == State.INACTIVE ? "/preferences-desktop-display.png" : "/preferences-desktop-display-blue.png"}
+                src={!activeDevice ? "/preferences-desktop-display.png" : "/preferences-desktop-display-blue.png"}
                 alt={""}
                 width={width}
                 height={height}
@@ -73,7 +78,7 @@ export function DeviceArtwork({
               />}
             </div>
           </ContextMenuTrigger>
-          <ContextMenuContent className={cn("w-40", { ...props })}>
+          <ContextMenuContent className={cn("w-40", inactiveDevice && "hidden", { ...props })}>
             <ContextMenuItem
               onClick={() =>
                 router.push(`/staff/monitoring/${device?.id}`)
@@ -92,21 +97,24 @@ export function DeviceArtwork({
 
             <ContextMenuItem
               onClick={() => {
-                logoutUser(activeDevice.userId, activeDevice.deviceId).then((message) => {
-                  toast.success(message.success)
-                  router.refresh()
-                })
+                if (activeDevice)
+                  logoutUser(activeDevice.userId, activeDevice.deviceId).then((message) => {
+                    toast.success(message.success)
+                    onChanged()
+                  })
               }}>
               Logout
             </ContextMenuItem>
           </ContextMenuContent>
 
         </ContextMenu>
+
         <div className="space-y-1 text-sm">
           {isPending ? <Skeleton className="h-4 w-40" /> : <h3 className="font-medium leading-none">{device?.name}</h3>}
-          {isPending ? <Skeleton className="h-4 w-30" /> : <p className="text-xs text-muted-foreground">{user?.firstName} {user?.lastName}</p>}
-        </div>
 
+          {activeDevice && (isPending ? <Skeleton className="h-4 w-30" /> : <p className="text-xs text-muted-foreground">{user?.firstName} {user?.lastName}</p>)}
+
+        </div>
       </div>}
     </>
   )

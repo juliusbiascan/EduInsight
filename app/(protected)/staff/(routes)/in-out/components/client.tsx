@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button"
 import { ScannerModal } from "@/components/modals/scanner-modal";
-import { getDeviceUserBySchoolId } from "@/data/user";
+import { getDeviceUserById, getDeviceUserBySchoolId } from "@/data/user";
 import { Device, DeviceUser } from "@prisma/client";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -25,10 +25,7 @@ const InOutClient = () => {
 
 
   const [open, setOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [user, setUser] = useState<DeviceUser | null>();
-  const [devices, setDevices] = useState<Device[] | null>([]);
-  const [state, setState] = useState(false);
+  const [open2, setOpen2] = useState('');
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -47,25 +44,12 @@ const InOutClient = () => {
 
     startTransition(async () => {
       try {
-        const user = await getDeviceUserBySchoolId(userId);
-
+        const user = await getDeviceUserById(userId)
         if (!user) {
-          toast.error("User not found")
-          return;
+          toast.error("No User Found")
+          return
         }
-
-        const devices = await getAllDevice(user.labId);
-
-        if (!devices) {
-          toast.error("Device not found")
-          return;
-        }
-
-        const state = await getUserState(userId);
-        setState(state == 1);
-        setDevices(devices);
-        setUser(user);
-        setOpen2(true);
+        setOpen2(user.schoolId);
       } catch (error) {
         console.log(error);
         toast.error('Something went wrong.');
@@ -80,28 +64,8 @@ const InOutClient = () => {
     setError("");
     setSuccess("");
     startTransition(async () => {
-
       try {
-
-        const user = await getDeviceUserBySchoolId(data.schoolId);
-
-        if (!user) {
-          toast.error("User not found")
-          return;
-        }
-
-        const devices = await getAllDevice(user.labId);
-
-        if (!devices) {
-          toast.error("Device not found")
-          return;
-        }
-        const state = await getUserState(user.id);
-
-        setState(state == 1);
-        setDevices(devices);
-        setUser(user);
-        setOpen2(true);
+        setOpen2(data.schoolId);
       } catch (err) {
         console.log(err);
         toast.error(`Something went wrong.`);
@@ -113,7 +77,7 @@ const InOutClient = () => {
   const onConfirm = (error: string | undefined, success: string | undefined) => {
     setError(error);
     setSuccess(success);
-    setOpen2(false);
+    setOpen2('');
   }
 
   return (
@@ -125,14 +89,12 @@ const InOutClient = () => {
         loading={isPending} />
 
 
-      {(user && devices) && <ClockInModal
-        isOpen={open2}
-        onClose={() => setOpen2(false)}
+      {<ClockInModal
+        isOpen={open2 != ''}
+        onClose={() => setOpen2('')}
         onConfirm={onConfirm}
         loading={isPending}
-        devices={devices}
-        user={user}
-        state={state}
+        userId={open2}
       />
       }
 
@@ -150,7 +112,7 @@ const InOutClient = () => {
       <FormError message={error} />
       <FormSuccess message={success} />
       <div className="relative">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
               <CardTitle>QR Scanner</CardTitle>

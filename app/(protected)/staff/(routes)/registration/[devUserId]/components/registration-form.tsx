@@ -92,13 +92,11 @@ export const DeviceUserForm: React.FC<DeviceUserFormProps> = ({
       if (initialData) {
         console.log(`/api/${labId}/registration/${params.devUserId}`);
         await axios.patch(`/api/${labId}/registration/${params.devUserId}`, data)
-        router.refresh();
-        router.push('/staff/registration');
-        router.refresh()
       } else {
         await axios.post(`/api/${labId}/registration`, data)
       }
-
+      router.push('/staff/registration');
+      router.refresh()
       toast.success(toastMessage)
     } catch (err) {
       toast.error("Something went wrong.");
@@ -142,31 +140,30 @@ export const DeviceUserForm: React.FC<DeviceUserFormProps> = ({
       <Separator />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
-          <div className='grid gap-8'>
-            <div className='w-2/5'>
-              <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Capture Image</FormLabel>
-                    <FormControl>
-                      <CustomWebcam
-                        value={field.value}
-                        disabled={loading}
-                        onSave={(value) => {
-                          form.setValue("image", value);
-                        }}
-                        onRemove={(value) => {
-                          form.setValue("image", "");
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-            </div>
-            <div className='w-3/5 grid grid-cols-2 gap-8'>
+          <div className='flex gap-8'>
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Capture Image</FormLabel>
+                  <FormControl>
+                    <CustomWebcam
+                      value={field.value}
+                      disabled={loading}
+                      onSave={(value) => {
+                        form.setValue("image", value);
+                      }}
+                      onRemove={(value) => {
+                        form.setValue("image", "");
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+            <div className='w-3/5 grid gap-8'>
               <FormField
                 control={form.control}
                 name="schoolId"
@@ -179,7 +176,6 @@ export const DeviceUserForm: React.FC<DeviceUserFormProps> = ({
                     <FormMessage />
                   </FormItem>
                 )} />
-
               <FormField
                 control={form.control}
                 name="firstName"

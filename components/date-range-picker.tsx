@@ -14,9 +14,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 export function CalendarDateRangePicker({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
+
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 4, 4),
-    to: addDays(new Date(2024, 4, 4), 20),
+    from: new Date(),
+    to: addDays(new Date(), 3),
   })
 
   return (

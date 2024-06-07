@@ -1,9 +1,13 @@
+"use client"
+
 import { Poppins } from "next/font/google";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LoginButton } from "@/components/auth/login-button";
 import Image from "next/image";
+import Link from "next/link";
+import { Result } from "@zxing/library";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -25,7 +29,10 @@ export default function Home() {
           <p className="text-white text-lg">
             Computer Lab Monitoring System for Enhanced Learning <br /> in San Miguel National Highschool
           </p>
-          <div>
+          <div className="flex gap-2">
+            <Button variant='outline' size='lg'>
+              <Link href={"/scan"}>Quick Scan</Link>
+            </Button>
             <LoginButton asChild>
               <Button variant="secondary" size="lg">
                 Sign in
@@ -34,6 +41,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+
     </main>
   )
 }

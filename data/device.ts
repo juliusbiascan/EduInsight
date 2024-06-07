@@ -48,7 +48,7 @@ export const getAllActiveUserDevice = async (labId: string) => {
 };
 export const getAllInactiveUserDevice = async (labId: string) => {
   try {
-    const device = await db.activeDeviceUser.findMany({ where: { labId, state: State.INACTIVE } });
+    const device = await db.device.findMany({ where: { labId, isUsed: false } });
     return device;
   } catch {
     return null;

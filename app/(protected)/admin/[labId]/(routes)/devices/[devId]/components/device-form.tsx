@@ -182,7 +182,7 @@ export const DeviceForm: React.FC<DeviceFormProps> = ({
                       Archived
                     </FormLabel>
                     <FormDescription>
-                      The product will appear anywhere in the store.
+                      The will will appear anywhere in the lab.
                     </FormDescription>
                   </div>
                 </FormItem>

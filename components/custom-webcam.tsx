@@ -1,10 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
+import { Check, ChevronsUpDown, Trash } from 'lucide-react';
 import Image from 'next/image';
 import Webcam from 'react-webcam';
+import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
+import { cn } from '@/lib/utils';
 
 interface CustomWebcamProps {
   disabled?: boolean;
@@ -20,7 +23,26 @@ const CustomWebcam: React.FC<CustomWebcamProps> = ({
   value
 }) => {
 
-  const webcamRef = useRef(null);
+  const webcamRef = useRef<Webcam>(null);
+
+  const [open, setOpen] = useState(false)
+
+  const [deviceId, setDeviceId] = useState('');
+
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+
+  const handleDevices = useCallback(
+    (mediaDevices: MediaDeviceInfo[]) =>
+      setDevices(mediaDevices.filter(({ kind }) => kind === "videoinput")),
+    [setDevices]
+  );
+
+  useEffect(
+    () => {
+      navigator.mediaDevices.enumerateDevices().then(handleDevices);
+    },
+    [handleDevices]
+  );
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -29,8 +51,11 @@ const CustomWebcam: React.FC<CustomWebcamProps> = ({
   };
 
   const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    onSave(imageSrc);
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      onSave(imageSrc);
+    }
+
   }
 
   useEffect(() => {
@@ -43,7 +68,7 @@ const CustomWebcam: React.FC<CustomWebcamProps> = ({
   }
 
   return (
-    <div>
+    <>
       <div className='mb-4 flex flex-col gap-4'>
         {value ? (
           <div className='relative w-[300px] h-[200px] rounded-md overflow-hidden'>
@@ -62,14 +87,63 @@ const CustomWebcam: React.FC<CustomWebcamProps> = ({
             mirrored={true}
             screenshotFormat="image/jpeg"
             screenshotQuality={0.8}
-            videoConstraints={{
-            }} />
+            videoConstraints={{ deviceId: deviceId }}
+          />
         )}
-        <div className='grid grid-cols-2 items-center gap-8'>
-          {!value && <Button disabled={disabled} variant={'outline'} onClick={capture}>Capture photo</Button>}
-        </div>
+        {!value &&
+          <div className='flex flex-col gap-2'>
+            <Button
+              disabled={disabled}
+              variant={'outline'}
+              onClick={capture}>
+              Capture photo
+            </Button>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                >
+                  {value
+                    ? devices.find((device) => device.deviceId === value)?.label
+                    : "Select webcam..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Command>
+                  <CommandInput placeholder="Search webcam..." />
+                  <CommandEmpty>No webcam found.</CommandEmpty>
+                  <CommandGroup>
+                    <CommandList>
+                      {devices.map((device, key) => (
+                        <CommandItem
+                          key={key}
+                          value={device.deviceId}
+                          onSelect={(currentValue) => {
+                            setDeviceId(currentValue === value ? "" : currentValue)
+                            setOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === device.deviceId ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {device.label}
+                        </CommandItem>
+                      ))}
+                    </CommandList>
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+        }
       </div>
-    </div>
+    </>
   )
 };
 

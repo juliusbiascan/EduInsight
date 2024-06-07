@@ -138,9 +138,9 @@ model ActiveDeviceUser {
 }
 
 model ActiveUserLogs {
-  id                 String   @id @default(uuid())
-  labId              String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  activeDeviceUserId String
+  id        String   @id @default(uuid())
+  labId     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
 }

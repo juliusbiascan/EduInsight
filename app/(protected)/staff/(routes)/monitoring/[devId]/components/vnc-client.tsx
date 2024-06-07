@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import VncScreen, { VncScreenHandle } from "@/components/vnc-screen";
-import RFB from "@/noVNC/core/rfb";
 import { Device } from "@prisma/client";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Maximize, Minimize } from "lucide-react";
@@ -27,32 +26,28 @@ export const VncClient: React.FC<VncClientProps> = ({
             {device.name}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Monitor this device
+            {device.devHostname}
           </p>
         </div>
       </div>
       <Separator className="my-4" />
-
-      <VncScreen
-        className="w-full"
-        url={`wss://localhost:8080/${device.devHostname}`}
-        scaleViewport
-        style={{
-          position: !isFull ? "relative" : "absolute",
-          top: "0",
-          bottom: "0",
-          width: '100%',
-          height: '100vh',
-          overflow: "hidden",
-        }}
-        ref={ref}
-      />
-
       <Button
-        className="absolute top-0 right-50 mt-20"
+        className=""
         variant={"ghost"} onClick={() => setFullScr(!isFull)}>
         {!isFull ? <Maximize className="mr-3" /> : <Minimize className="mr-3" />}
         {!isFull ? "Maximize" : "Minimize"}
+      </Button>
+
+      <Button
+        className=""
+        variant={"ghost"} onClick={() => ref.current?.connect()}>
+        Connect
+      </Button>
+
+      <Button
+        className=""
+        variant={"ghost"} onClick={() => ref.current?.disconnect()}>
+        Disconnect
       </Button>
 
       <Button
@@ -78,6 +73,21 @@ export const VncClient: React.FC<VncClientProps> = ({
         variant={"ghost"} onClick={() => ref.current?.machineReset}>
         Reset
       </Button>
+
+      <VncScreen
+        className="w-full"
+        url={`ws://${device.devHostname}:8080/`}
+        scaleViewport
+        style={{
+          position: !isFull ? "relative" : "absolute",
+          top: "0",
+          bottom: "0",
+          width: '100%',
+          height: '100vh',
+          overflow: "hidden",
+        }}
+        ref={ref}
+      />
     </>
   )
 }

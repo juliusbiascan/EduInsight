@@ -5,17 +5,15 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { getActiveUserDevice, getDeviceById } from "@/data/device"
 import { getDeviceUserById } from "@/data/user"
-import { ActiveDeviceUser, Device, DeviceUser, State } from "@prisma/client"
-import { format, formatDistance } from "date-fns"
+import { DeviceUser } from "@prisma/client"
+import { formatDistance } from "date-fns"
 import { useEffect, useState, useTransition } from "react"
-import toast from "react-hot-toast"
 
 export type RecentUsersType = {
   id: string
   labId: string
-  activeDeviceUserId: string
+  userId: string
   createdAt: Date
 }
 
@@ -35,10 +33,8 @@ export const RecentUsers: React.FC<RecentUsersProps> = ({
     const fetchData = async () => {
       let userArray: DeviceUser[] = [];
       for (const recent of data) {
+        const user = await getDeviceUserById(recent.userId)
 
-        const activeDeviceUser = await getActiveUserDevice(recent.activeDeviceUserId)
-
-        const user = await getDeviceUserById(activeDeviceUser?.userId)
         if (user) {
           user.createdAt = recent.createdAt
           userArray.push(user)

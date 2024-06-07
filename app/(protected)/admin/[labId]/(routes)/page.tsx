@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecentUsers, RecentUsersType } from "../components/recent-users";
@@ -7,11 +7,11 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { Overview } from "../components/overview";
-import { getAllDevice, getTotalDevices } from "@/data/device";
+import { getTotalDevices } from "@/data/device";
 import { getActiveCount } from "@/actions/staff";
-import { getAllDeviceUserCount, getDeviceUserById } from "@/data/user";
+import { getAllDeviceUserCount } from "@/data/user";
 import { getGraphLogins, getRecentLogins } from "@/data/get-graph-count";
-import { format } from "date-fns";
+import { addDays } from "date-fns";
 
 interface DashboardPageProps {
   params: {
@@ -51,7 +51,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
   const formattedRecentLogin: RecentUsersType[] = recentLogin.map(item => ({
     id: item.id,
     labId: item.labId,
-    activeDeviceUserId: item.activeDeviceUserId,
+    userId: item.userId,
     createdAt: item.createdAt,
   }));
 
@@ -69,10 +69,10 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics" disabled>
+              <TabsTrigger value="analytics" >
                 Analytics
               </TabsTrigger>
-              <TabsTrigger value="reports" disabled>
+              <TabsTrigger value="reports" >
                 Reports
               </TabsTrigger>
               <TabsTrigger value="notifications" disabled>
@@ -101,9 +101,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">+{recentLogin.length}</div>
-                    <p className="text-xs text-muted-foreground">
-                      +20.1% from last month
-                    </p>
+                    {/* <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -128,9 +128,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">+{allUser}</div>
-                    <p className="text-xs text-muted-foreground">
-                      +180.1% from last month
-                    </p>
+                    {/* <p className="text-xs text-muted-foreground">
+                  +180.1% from last month
+                </p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -152,9 +152,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">+{allDevices}</div>
-                    <p className="text-xs text-muted-foreground">
-                      +{allDevices} on this month
-                    </p>
+                    {/* <p className="text-xs text-muted-foreground">
+                  +{allDevices} on this month
+                </p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -177,9 +177,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">+{activeCount}</div>
-                    <p className="text-xs text-muted-foreground">
-                      +{allDevices} on this month
-                    </p>
+                    {/* <p className="text-xs text-muted-foreground">
+                  +{allDevices} on this month
+                </p> */}
                   </CardContent>
                 </Card>
               </div>
@@ -195,15 +195,21 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
                 <Card className="col-span-4">
                   <CardHeader>
                     <CardTitle>Recent Login</CardTitle>
-                    <CardDescription>
-                      You made 265 login this month.
-                    </CardDescription>
+                    {/* <CardDescription>
+                  You made 265 login this month.
+                </CardDescription> */}
                   </CardHeader>
                   <CardContent>
                     <RecentUsers data={formattedRecentLogin} />
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+            <TabsContent value="analytics" className="space-y-4">
+            </TabsContent>
+            <TabsContent value="reports" className="space-y-4">
+            </TabsContent>
+            <TabsContent value="notifications" className="space-y-4">
             </TabsContent>
           </Tabs>
         </div>

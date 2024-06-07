@@ -43,19 +43,20 @@ export const QRModal: React.FC<QRModalProps> = ({
       onClose={onClose}
     >
       <div className="grid grid-cols-2 gap-8">
-        <Canvas
-          text={data?.id}
-          options={{
-            errorCorrectionLevel: 'M',
-            margin: 3,
-            scale: 4,
-            width: 200,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF',
-            },
-          }}
-        />
+        {isOpen &&
+          <Canvas
+            text={data?.id}
+            options={{
+              errorCorrectionLevel: 'M',
+              margin: 3,
+              scale: 4,
+              width: 200,
+              color: {
+                dark: '#000000',
+                light: '#FFFFFF',
+              },
+            }}
+          />}
       </div>
       <div className="pt-6 space-x-2 flex items-center justify-end w-full">
         <Button disabled={loading} variant="outline" onClick={onClose}>

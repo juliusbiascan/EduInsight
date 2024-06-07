@@ -8,13 +8,13 @@ import { create } from "domain";
 
 export const clockIn = async (values: z.infer<typeof ClockInSchema>) => {
 
-  const validatedFields = ClockInSchema.safeParse(values);
+  // const validatedFields = ClockInSchema.safeParse(values);
 
-  if (!validatedFields.success) {
-    return { error: `Invalid fields!` };
-  }
+  // if (!validatedFields.success) {
+  //   return { error: `Invalid fields!` };
+  // }
 
-  const { deviceId, userId } = validatedFields.data;
+  const { deviceId, userId } = values;
 
 
   const activeDeviceUser = await db.activeDeviceUser.count({
@@ -75,7 +75,7 @@ export const clockIn = async (values: z.infer<typeof ClockInSchema>) => {
   await db.activeUserLogs.create({
     data: {
       labId: device.labId,
-      activeDeviceUserId: user.id
+      userId: user.userId
     }
   });
 
